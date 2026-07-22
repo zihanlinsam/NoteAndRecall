@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#FF6F00</color>
+    <color name="black">#000000</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="primary">#1565C0</color>
+    <color name="primary_dark">#003258</color>
+    <color name="white">#FFFFFF</color>
+    <string name="ai_config">AI Configuration</string>
+    <string name="ai_not_configured">Configure AI settings first</string>
+    <string name="all">All</string>
+    <string name="api_endpoint">API Endpoint</string>
+    <string name="api_key">API Key</string>
+    <string name="app_name">Note&amp;Recall</string>
+    <string name="audio_permission">Microphone permission needed for speech input</string>
+    <string name="cancel">Cancel</string>
+    <string name="capture">Capture</string>
+    <string name="content">Content</string>
+    <string name="content_empty">Content cannot be empty</string>
+    <string name="delete">Delete</string>
+    <string name="enter_content_first">Enter some content first</string>
+    <string name="export_as_markdown">Export as Markdown</string>
+    <string name="export_knowledge">Export Knowledge</string>
+    <string name="familiar">Familiar</string>
+    <string name="filter_by_tag">Filter by tag:</string>
+    <string name="import_all">Import All</string>
+    <string name="import_export">Import / Export</string>
+    <string name="import_from_markdown">Select File to Import</string>
+    <string name="import_knowledge">Import Knowledge</string>
+    <string name="item_deleted">Item deleted</string>
+    <string name="items_count">%d items</string>
+    <string name="knowledge_detail">Knowledge Detail</string>
+    <string name="knowledge_list">Knowledge List</string>
+    <string name="location_permission">Location permission needed to record where notes were taken</string>
+    <string name="menu_ai_config">AI Config</string>
+    <string name="menu_import_export">Import / Export</string>
+    <string name="menu_knowledge_list">Knowledge List</string>
+    <string name="model_name">Model Name</string>
+    <string name="new_note">New Note</string>
+    <string name="no_items_tag">No items with this tag</string>
+    <string name="no_items_yet">No knowledge items yet.\nGo capture some notes first!</string>
+    <string name="note">Note</string>
+    <string name="note_content">Note content</string>
+    <string name="note_saved">Note saved!</string>
+    <string name="polish">Polish</string>
+    <string name="recall">Recall</string>
+    <string name="recall_mode">Recall Mode</string>
+    <string name="recalls">recalls</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="saved">Saved!</string>
+    <string name="speak">Speak</string>
+    <string name="submit">Submit</string>
+    <string name="tags_comma">Tags (comma separated)</string>
+    <string name="test_connection">Test Connection</string>
+    <string name="title">Title</string>
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="unfamiliar">Unfamiliar</string>
+    <style name="Theme.NoteAndRecall" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#1565C0</item>
+    </style>
+</resources>

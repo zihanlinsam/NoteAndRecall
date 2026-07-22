@@ -1,0 +1,28 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# App build
+app/build/
+app/release/
+
+# Keystore
+*.jks
+*.keystore
+
+# Env
+.env
+*.env.local
+
+# OS files
+Thumbs.db
+*.swp
+*.swo
+*~

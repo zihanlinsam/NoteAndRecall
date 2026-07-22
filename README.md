@@ -1,5 +1,7 @@
 # Note & Recall
 
+[English version](README.md) | [中文版本](README_ch.md)
+
 **A knowledge capture + spaced repetition Android app.**  
 Take notes via text, speech, or image — then reinforce them through flashcard-based recall.
 

@@ -1,6 +1,7 @@
 package com.noteandrecall.ui.screens
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,10 +21,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.noteandrecall.data.KnowledgeDao
+import com.noteandrecall.data.KnowledgeItem
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun KnowledgeListScreen(
     navController: NavController,
@@ -32,6 +36,11 @@ fun KnowledgeListScreen(
     var searchTag by remember { mutableStateOf("") }
     var sortBy by remember { mutableStateOf("date") }
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US) }
+    val scope = rememberCoroutineScope()
+
+    // Multi-select for batch delete
+    var selectedIds by remember { mutableStateOf(setOf<Long>()) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // Extract unique tags from all items
     val allTags = remember(allItems) {
@@ -54,10 +63,23 @@ fun KnowledgeListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Knowledge List") },
+                title = { Text(if (selectedIds.isEmpty()) "Knowledge List" else "${selectedIds.size} selected") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    if (selectedIds.isNotEmpty()) {
+                        IconButton(onClick = { selectedIds = emptySet() }) {
+                            Icon(Icons.Default.Close, contentDescription = "Cancel")
+                        }
+                    } else {
+                        IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                },
+                actions = {
+                    if (selectedIds.isNotEmpty()) {
+                        IconButton(onClick = { showDeleteDialog = true }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
                     }
                 }
             )
@@ -161,9 +183,23 @@ fun KnowledgeListScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { navController.navigate("detail/${item.id}") },
+                                .combinedClickable(
+                                    onClick = {
+                                        if (selectedIds.isNotEmpty()) {
+                                            selectedIds = if (item.id in selectedIds) selectedIds - item.id else selectedIds + item.id
+                                        } else {
+                                            navController.navigate("detail/${item.id}")
+                                        }
+                                    },
+                                    onLongClick = {
+                                        selectedIds = if (item.id in selectedIds) selectedIds - item.id else selectedIds + item.id
+                                    }
+                                ),
                             shape = RoundedCornerShape(12.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                            colors = if (item.id in selectedIds) CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ) else CardDefaults.cardColors()
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Row(
@@ -217,5 +253,31 @@ fun KnowledgeListScreen(
                 }
             }
         }
+    }
+
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Items") },
+            text = { Text("Are you sure you want to delete ${selectedIds.size} selected items?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    val idsToDelete = selectedIds.toList()
+                    selectedIds = emptySet()
+                    // Delete sequentially
+                    scope.launch {
+                        for (id in idsToDelete) {
+                            val item = dao.getById(id)
+                            if (item != null) dao.delete(item)
+                        }
+                    }
+                }) { Text("Delete", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
+            }
+        )
     }
 }

@@ -66,7 +66,7 @@ fun KnowledgeDetailScreen(
             TopAppBar(
                 title = { Text("Knowledge Detail") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }

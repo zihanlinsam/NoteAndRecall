@@ -60,9 +60,14 @@ fun NoteAndRecallTheme(
     prefsManager: PreferencesManager,
     content: @Composable () -> Unit
 ) {
-    val isDarkPref by prefsManager.isDarkTheme.collectAsState(initial = false)
+    val themeMode by prefsManager.themeMode.collectAsState(initial = 0)
     val systemDark = isSystemInDarkTheme()
-    val darkTheme = if (isDarkPref) true else false
+    val darkTheme = when (themeMode) {
+        0 -> systemDark   // Auto — follow system
+        1 -> false         // Light
+        2 -> true          // Dark
+        else -> systemDark
+    }
 
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 

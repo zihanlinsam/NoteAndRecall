@@ -25,7 +25,7 @@ fun HelpScreen(navController: NavController) {
             TopAppBar(
                 title = { Text("Help") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }

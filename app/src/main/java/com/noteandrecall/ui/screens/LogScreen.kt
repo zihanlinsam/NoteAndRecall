@@ -44,7 +44,7 @@ fun LogScreen(navController: NavController) {
             TopAppBar(
                 title = { Text("Log") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },

@@ -22,7 +22,7 @@ fun MainNavGraph(
         startDestination = "home"
     ) {
         composable("home") {
-            HomeScreen(navController = navController, prefsManager = prefsManager)
+            HomeScreen(navController = navController, prefsManager = prefsManager, dao = dao)
         }
         composable("note") {
             NoteScreen(navController = navController, dao = dao, prefsManager = prefsManager)
@@ -54,6 +54,9 @@ fun MainNavGraph(
         }
         composable("help") {
             HelpScreen(navController = navController)
+        }
+        composable("about") {
+            AboutScreen(navController = navController)
         }
     }
 }

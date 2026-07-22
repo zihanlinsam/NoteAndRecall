@@ -87,14 +87,14 @@ fun NoteScreen(
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, opts)
         val origW = opts.outWidth; val origH = opts.outHeight
         LogManager.i("NoteScreen", "compressImage: original ${origW}x${origH} size=${bytes.size}")
-        val maxDim = 1920
+        val maxDim = 1024
         var scale = 1
         while (origW / scale > maxDim || origH / scale > maxDim) scale *= 2
         val decodeOpts = BitmapFactory.Options().apply { inSampleSize = scale }
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, decodeOpts)
             ?: return bytes
         val out = java.io.ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, out)
         bitmap.recycle()
         LogManager.i("NoteScreen", "compressImage: compressed -> ${out.size()} bytes")
         return out.toByteArray()
@@ -229,7 +229,7 @@ fun NoteScreen(
             TopAppBar(
                 title = { Text("New Note") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }

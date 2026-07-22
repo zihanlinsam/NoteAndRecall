@@ -105,7 +105,7 @@ $raw"""
                     )
                 )
             ),
-            "max_tokens" to 1024
+            "max_tokens" to 4096
         )
         val reqBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
         val request = Request.Builder()

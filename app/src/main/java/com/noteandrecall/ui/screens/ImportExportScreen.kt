@@ -80,7 +80,7 @@ fun ImportExportScreen(
             TopAppBar(
                 title = { Text("Import / Export") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }

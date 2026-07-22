@@ -36,7 +36,7 @@ fun ScoreSettingsScreen(
             TopAppBar(
                 title = { Text("Score Settings") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }

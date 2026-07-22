@@ -2,6 +2,8 @@ package com.noteandrecall.ui.screens
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -55,7 +57,7 @@ fun RecallScreen(
             TopAppBar(
                 title = { Text("Recall Mode") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { if (navController.previousBackStackEntry != null) navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -179,11 +181,12 @@ fun RecallScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(Modifier.height(16.dp))
-                                    // Markdown rendering for content
+                                    // Markdown rendering for content — scrollable
                                     Markdown(
                                         content = currentItem.content,
                                         modifier = Modifier
-                                            .fillMaxSize()
+                                            .weight(1f)
+                                            .verticalScroll(rememberScrollState())
                                             .padding(horizontal = 4.dp)
                                     )
                                 }

@@ -13,8 +13,8 @@ android {
         applicationId = "com.noteandrecall"
         minSdk = 26
         targetSdk = 35
-        versionCode = 28
-        versionName = "3.9"
+        versionCode = 47
+        versionName = "1.0"
     }
 
     buildTypes {

@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.noteandrecall.data.KnowledgeDao
 import com.noteandrecall.data.PreferencesManager
 import kotlinx.coroutines.launch
 
@@ -19,11 +20,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController,
-    prefsManager: PreferencesManager
+    prefsManager: PreferencesManager,
+    dao: KnowledgeDao
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val isDark by prefsManager.isDarkTheme.collectAsState(initial = false)
+    val themeMode by prefsManager.themeMode.collectAsState(initial = 0)
 
     Scaffold(
         topBar = {
@@ -37,57 +39,40 @@ fun HomeScreen(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
                     ) {
+                        // Theme selector — single cycling button
+                        val modeLabels = listOf("\uD83C\uDF17 Auto", "\u2600\uFE0F Light", "\uD83C\uDF19 Dark")
                         DropdownMenuItem(
-                            text = {
-                                Text(if (isDark) "Switch to Light Theme" else "Switch to Dark Theme")
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                scope.launch { prefsManager.setDarkTheme(!isDark) }
-                            }
+                            text = { Text(modeLabels[themeMode]) },
+                            onClick = { menuExpanded = false; scope.launch { prefsManager.setThemeMode((themeMode + 1) % 3) } }
                         )
                         DropdownMenuItem(
                             text = { Text("Knowledge List") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("knowledge_list")
-                            }
+                            onClick = { menuExpanded = false; navController.navigate("knowledge_list") }
                         )
                         DropdownMenuItem(
                             text = { Text("AI Config") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("ai_config")
-                            }
+                            onClick = { menuExpanded = false; navController.navigate("ai_config") }
                         )
                         DropdownMenuItem(
                             text = { Text("Import / Export") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("import_export")
-                            }
+                            onClick = { menuExpanded = false; navController.navigate("import_export") }
                         )
                         DropdownMenuItem(
                             text = { Text("Score Settings") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("score_settings")
-                            }
+                            onClick = { menuExpanded = false; navController.navigate("score_settings") }
                         )
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("📖 Help") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("help")
-                            }
+                            text = { Text("\uD83D\uDCD6 Help") },
+                            onClick = { menuExpanded = false; navController.navigate("help") }
                         )
                         DropdownMenuItem(
-                            text = { Text("📋 Log") },
-                            onClick = {
-                                menuExpanded = false
-                                navController.navigate("log")
-                            }
+                            text = { Text("\u2139\uFE0F About") },
+                            onClick = { menuExpanded = false; navController.navigate("about") }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("\uD83D\uDCCB Log") },
+                            onClick = { menuExpanded = false; navController.navigate("log") }
                         )
                     }
                 }
@@ -104,61 +89,33 @@ fun HomeScreen(
         ) {
             Button(
                 onClick = { navController.navigate("note") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
+                modifier = Modifier.fillMaxWidth().height(140.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "📝",
-                        fontSize = 40.sp
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Note",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Capture knowledge instantly",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-                    )
+                    Text("\uD83D\uDCDD", fontSize = 40.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text("Note", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("Capture knowledge instantly", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f))
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(Modifier.height(32.dp))
 
             Button(
                 onClick = { navController.navigate("recall") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
+                modifier = Modifier.fillMaxWidth().height(140.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "🧠",
-                        fontSize = 40.sp
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Recall",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Review what you've learned",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f)
-                    )
+                    Text("\uD83E\uDDE0", fontSize = 40.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text("Recall", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text("Review what you've learned", style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.8f))
                 }
             }
         }

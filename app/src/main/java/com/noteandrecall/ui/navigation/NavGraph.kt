@@ -1,5 +1,7 @@
 package com.noteandrecall.ui.navigation
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -24,8 +26,32 @@ fun MainNavGraph(
         composable("home") {
             HomeScreen(navController = navController, prefsManager = prefsManager, dao = dao)
         }
-        composable("note") {
-            NoteScreen(navController = navController, dao = dao, prefsManager = prefsManager)
+        composable(
+            "note",
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+        ) {
+            NoteScreen(navController = navController, dao = dao, prefsManager = prefsManager, mode = NoteMode.MANUAL)
+        }
+        composable(
+            "note_auto",
+            enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
+        ) {
+            NoteScreen(navController = navController, dao = dao, prefsManager = prefsManager, mode = NoteMode.AUTO)
+        }
+        composable(
+            route = "note_edit?title={title}&tags={tags}&content={content}",
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType; defaultValue = "" },
+                navArgument("tags") { type = NavType.StringType; defaultValue = "" },
+                navArgument("content") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val t = backStackEntry.arguments?.getString("title")?.let { java.net.URLDecoder.decode(it, "UTF-8") } ?: ""
+            val tg = backStackEntry.arguments?.getString("tags")?.let { java.net.URLDecoder.decode(it, "UTF-8") } ?: ""
+            val c = backStackEntry.arguments?.getString("content")?.let { java.net.URLDecoder.decode(it, "UTF-8") } ?: ""
+            NoteScreen(navController = navController, dao = dao, prefsManager = prefsManager, mode = NoteMode.AUTO_EDIT, initialTitle = t, initialTags = tg, initialContent = c)
         }
         composable("recall") {
             RecallScreen(navController = navController, dao = dao, prefsManager = prefsManager)
@@ -57,6 +83,9 @@ fun MainNavGraph(
         }
         composable("about") {
             AboutScreen(navController = navController)
+        }
+        composable("graph") {
+            GraphScreen(navController = navController, dao = dao)
         }
     }
 }

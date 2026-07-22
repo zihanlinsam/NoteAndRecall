@@ -24,7 +24,7 @@ object AiClient {
                 "model" to model,
                 "messages" to listOf(mapOf("role" to "user", "content" to prompt)),
                 "temperature" to 0.3,
-                "max_tokens" to 1024
+                "max_tokens" to 4096
             )
             val reqBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
             val request = Request.Builder()
@@ -71,7 +71,7 @@ object AiClient {
 
 Rules:
 - Generate a concise title (max 8 words)
-- Keep the core content accurate
+- Keep the core content accurate and COMPLETE (at least 150 words)
 - $tagHint
 - Write CONTENT in Markdown format. Use headings (##), tables, lists, or bold only when the content exceeds 500 words — keep short notes as plain text or minimal formatting.
 - Match the language of the raw note below (if input is Chinese, output Chinese; if English, output English, etc.)

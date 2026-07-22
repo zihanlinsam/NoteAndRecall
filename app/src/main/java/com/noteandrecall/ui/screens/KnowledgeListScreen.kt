@@ -35,6 +35,8 @@ fun KnowledgeListScreen(
     val allItems by dao.getAllItems().collectAsState(initial = emptyList())
     var searchTag by remember { mutableStateOf("") }
     var sortBy by remember { mutableStateOf("date") }
+    var isSearching by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf("") }
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US) }
     val scope = rememberCoroutineScope()
 
@@ -48,10 +50,15 @@ fun KnowledgeListScreen(
             .distinct().sorted()
     }
 
-    // Filter by tag and sort
-    val filteredItems = remember(allItems, searchTag, sortBy) {
-        val filtered = if (searchTag.isBlank()) allItems
-        else allItems.filter { it.tags.contains(searchTag, ignoreCase = true) }
+    // Filter by tag, search title, and sort
+    val filteredItems = remember(allItems, searchTag, searchText, sortBy) {
+        var filtered = allItems
+        if (searchText.isNotBlank()) {
+            filtered = filtered.filter { it.title.contains(searchText, ignoreCase = true) }
+        }
+        if (searchTag.isNotBlank()) {
+            filtered = filtered.filter { it.tags.contains(searchTag, ignoreCase = true) }
+        }
 
         when (sortBy) {
             "recalls" -> filtered.sortedBy { it.recallCount }
@@ -63,9 +70,19 @@ fun KnowledgeListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (selectedIds.isEmpty()) "Knowledge List" else "${selectedIds.size} selected") },
+                title = {
+                    if (isSearching) {
+                        Text("Search")
+                    } else {
+                        Text(if (selectedIds.isEmpty()) "Knowledge List" else "${selectedIds.size} selected")
+                    }
+                },
                 navigationIcon = {
-                    if (selectedIds.isNotEmpty()) {
+                    if (isSearching) {
+                        IconButton(onClick = { isSearching = false; searchText = "" }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    } else if (selectedIds.isNotEmpty()) {
                         IconButton(onClick = { selectedIds = emptySet() }) {
                             Icon(Icons.Default.Close, contentDescription = "Cancel")
                         }
@@ -80,6 +97,10 @@ fun KnowledgeListScreen(
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(Icons.Default.Delete, contentDescription = "Delete")
                         }
+                    } else if (!isSearching) {
+                        IconButton(onClick = { isSearching = true; searchText = "" }) {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
                     }
                 }
             )
@@ -91,67 +112,83 @@ fun KnowledgeListScreen(
                 .padding(padding)
                 .padding(horizontal = 16.dp)
         ) {
-            // Tag filter chips
-            if (allTags.isNotEmpty()) {
+            // Search field
+            if (isSearching) {
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = { searchText = it },
+                    label = { Text("Search titles") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+
+            // Tag filter chips + Sort chips (hidden during search)
+            if (!isSearching) {
+                // Tag filter chips
+                if (allTags.isNotEmpty()) {
+                    Text(
+                        text = "Filter by tag:",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    ) {
+                        item {
+                            FilterChip(
+                                selected = searchTag.isBlank(),
+                                onClick = { searchTag = "" },
+                                label = { Text("All") },
+                                leadingIcon = if (searchTag.isBlank()) {
+                                    { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                                } else null
+                            )
+                        }
+                        items(allTags) { tag ->
+                            FilterChip(
+                                selected = searchTag == tag,
+                                onClick = { searchTag = if (searchTag == tag) "" else tag },
+                                label = { Text(tag) }
+                            )
+                        }
+                    }
+                }
+
+                // Sort chips
                 Text(
-                    text = "Filter by tag:",
+                    text = "Sort by:",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
                 )
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     item {
                         FilterChip(
-                            selected = searchTag.isBlank(),
-                            onClick = { searchTag = "" },
-                            label = { Text("All") },
-                            leadingIcon = if (searchTag.isBlank()) {
-                                { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
-                            } else null
+                            selected = sortBy == "date",
+                            onClick = { sortBy = "date" },
+                            label = { Text("Date") }
                         )
                     }
-                    items(allTags) { tag ->
+                    item {
                         FilterChip(
-                            selected = searchTag == tag,
-                            onClick = { searchTag = if (searchTag == tag) "" else tag },
-                            label = { Text(tag) }
+                            selected = sortBy == "recalls",
+                            onClick = { sortBy = "recalls" },
+                            label = { Text("Recalls") }
                         )
                     }
-                }
-            }
-
-            // Sort chips
-            Text(
-                text = "Sort by:",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                item {
-                    FilterChip(
-                        selected = sortBy == "date",
-                        onClick = { sortBy = "date" },
-                        label = { Text("Date") }
-                    )
-                }
-                item {
-                    FilterChip(
-                        selected = sortBy == "recalls",
-                        onClick = { sortBy = "recalls" },
-                        label = { Text("Recalls") }
-                    )
-                }
-                item {
-                    FilterChip(
-                        selected = sortBy == "alpha",
-                        onClick = { sortBy = "alpha" },
-                        label = { Text("Alphabetical") }
-                    )
+                    item {
+                        FilterChip(
+                            selected = sortBy == "alpha",
+                            onClick = { sortBy = "alpha" },
+                            label = { Text("Alphabetical") }
+                        )
+                    }
                 }
             }
 
@@ -169,8 +206,11 @@ fun KnowledgeListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (searchTag.isNotBlank()) "No items with tag: #$searchTag"
-                        else "No items yet",
+                        text = when {
+                            searchText.isNotBlank() -> "No results for: \"$searchText\""
+                            searchTag.isNotBlank() -> "No items with tag: #$searchTag"
+                            else -> "No items yet"
+                        },
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -224,7 +264,7 @@ fun KnowledgeListScreen(
                                 if (item.tags.isNotBlank()) {
                                     Text(
                                         text = item.tags.split(",").filter { it.isNotBlank() }
-                                            .joinToString(" • ") { "#$it" },
+                                            .joinToString(" \u2022 ") { "#$it" },
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.tertiary,
                                         maxLines = 1,

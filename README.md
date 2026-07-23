@@ -3,7 +3,8 @@
 [English version](README.md) | [中文版本](README_ch.md)
 
 **A knowledge capture + spaced repetition Android app.**  
-Take notes via text, speech, or image — then reinforce them through flashcard-based recall.
+Take notes via text, speech, or image — then reinforce them through flashcard-based recall.  
+Visualize your knowledge connections with an interactive graph.
 
 📦 **Test data**: `knowledge_test_data.md` (50 general knowledge cards) — import via app menu → *Import / Export*.
 
@@ -16,6 +17,8 @@ Take notes via text, speech, or image — then reinforce them through flashcard-
 - **Speech input**: Tap Speak to record, tap again to stop — audio is transcribed and auto-polished via AI
 - **Image capture**: Take a photo or pick from gallery — compressed and analyzed by AI to extract text
 - **AI Polish**: Auto-generate title, tags (up to 3, reusing existing ones), and expanded Markdown content
+- **Extend**: Expand the current note to 500+ words with AI
+- **Haptic feedback** on all actions
 
 ### 🧠 Recall
 - Flashcard format: tap to reveal content (Markdown rendered)
@@ -31,6 +34,12 @@ Take notes via text, speech, or image — then reinforce them through flashcard-
 - Tap to view/edit details; tap tags to edit; long-press content to edit
 - **Batch delete**: Long-press to select multiple items, then delete with confirmation
 - Export all notes as Markdown; import from same format
+
+### 🕸️ Knowledge Graph
+- **Radial tag layout**: Items are grouped by tags and arranged in concentric circles
+- **12-color palette**: Each tag cluster gets a distinct color
+- **Interactive navigation**: Pinch-to-zoom and drag to explore
+- Labels and titles adaptively show/hide based on zoom level
 
 ### ⚙️ Settings
 | Menu item | Function |
@@ -54,6 +63,9 @@ Navigation:   Navigation Compose
 Network:      OkHttp + Gson
 AI:           MiMo v2.5 (OpenAI-compatible API)
 Markdown:     multiplatform-markdown-renderer-m3
+Graph:        Canvas (custom Compose Canvas with transformable gestures)
+Speech:       Android SpeechRecognizer
+Audio:        AudioRecord (PCM 16-bit, 44.1kHz mono)
 ```
 
 ## Build
@@ -64,7 +76,7 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ./gradlew assembleDebug
 ```
 
-APK output: `app/build/outputs/apk/debug/NoteAndRecall-v1.0.apk`
+APK output: `app/build/outputs/apk/debug/NoteAndRecall-v1.2-beta3.apk`
 
 ## Data Privacy
 

@@ -3,7 +3,8 @@
 [English version](README.md) | [中文版本](README_ch.md)
 
 **一款知识采集 + 间隔重复回忆的 Android 应用。**  
-通过文字、语音或图片记录笔记，再通过闪卡式回忆强化记忆。
+通过文字、语音或图片记录笔记，再通过闪卡式回忆强化记忆。  
+用交互式知识图谱直观展示你的知识连接。
 
 📦 **测试数据**：`knowledge_test_data.md`（50 条通用知识卡片）— 通过应用菜单 → *Import / Export* 导入。
 
@@ -16,6 +17,8 @@
 - **语音输入**：点击 Speak 开始录音，再次点击停止——音频通过 AI 转写并自动润色
 - **图片采集**：拍照或从相册选择——压缩后由 AI 分析提取文字
 - **AI 润色**：自动生成标题、标签（最多 3 个，优先复用已有），扩展为 Markdown 内容
+- **AI 扩充**：将当前笔记扩充到 500 字以上
+- **触感反馈**：所有操作均带有震动反馈
 
 ### 🧠 回忆
 - 闪卡形式：点击卡片显示内容（Markdown 渲染）
@@ -31,6 +34,12 @@
 - 点击查看/编辑详情；点击标签可编辑；长按内容可编辑
 - **批量删除**：长按选择多条，确认后批量删除
 - 导出所有笔记为 Markdown；从相同格式导入
+
+### 🕸️ 知识图谱
+- **辐射状标签布局**：条目按标签分组，围绕中心呈同心圆排列
+- **12 色调色板**：每个标签簇使用不同颜色区分
+- **交互式浏览**：双指缩放和平移拖拽探索
+- 标签和标题根据缩放级别自适应显示/隐藏
 
 ### ⚙️ 设置
 | 菜单项 | 功能 |
@@ -54,6 +63,9 @@ UI：         Jetpack Compose + Material3
 网络：       OkHttp + Gson
 AI：         MiMo v2.5（兼容 OpenAI 的 API）
 Markdown：   multiplatform-markdown-renderer-m3
+图谱：       Canvas（自定义 Compose Canvas + transformable 手势）
+语音：       Android SpeechRecognizer
+录音：       AudioRecord（PCM 16-bit, 44.1kHz 单声道）
 ```
 
 ## 构建
@@ -64,7 +76,7 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ./gradlew assembleDebug
 ```
 
-APK 输出：`app/build/outputs/apk/debug/NoteAndRecall-v1.0.apk`
+APK 输出：`app/build/outputs/apk/debug/NoteAndRecall-v1.2-beta3.apk`
 
 ## 数据隐私
 
